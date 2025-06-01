@@ -35,7 +35,27 @@ const getAllUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, 
         data: result
     });
 }));
+const updateUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.UserService.updateUser(req);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        message: "User updated successfully",
+        statusCode: http_status_1.status.OK,
+        data: result
+    });
+}));
+const deleteUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.UserService.deleteUser(req);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        message: "User deleted successfully",
+        statusCode: http_status_1.status.OK,
+        data: result
+    });
+}));
 exports.UserController = {
     createUser,
-    getAllUser
+    getAllUser,
+    updateUser,
+    deleteUser
 };

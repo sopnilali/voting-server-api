@@ -11,4 +11,6 @@ const auth_1 = __importDefault(require("../../middleware/auth"));
 const router = (0, express_1.Router)();
 router.post("/create", (0, auth_1.default)(client_1.UserRole.ADMIN), election_controller_1.ElectionController.createElection);
 router.get("/", election_controller_1.ElectionController.getAllElections);
+router.put("/:id", (0, auth_1.default)(client_1.UserRole.ADMIN), election_controller_1.ElectionController.updateElection);
+router.delete("/:id", (0, auth_1.default)(client_1.UserRole.ADMIN), election_controller_1.ElectionController.deleteElection);
 exports.ElectionRoutes = router;

@@ -23,8 +23,8 @@ const getVoteCount = catchAsync(async (req, res) => {
     })
 })
 
-const getVoteByElectionId = catchAsync(async (req, res) => {
-    const result = await VoteService.getVoteByElectionId(req);
+const getVoteByCandidateId = catchAsync(async (req, res) => {
+    const result = await VoteService.getVoteBycandidateId(req);
     sendResponse(res, {
         success: true,
         statusCode: status.OK,
@@ -39,6 +39,6 @@ const getVoteByElectionId = catchAsync(async (req, res) => {
 export const VoteController = {
     submitVote,
     getVoteCount,
-    getVoteByElectionId
+    getVoteByCandidateId
 }
 

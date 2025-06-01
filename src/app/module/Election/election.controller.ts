@@ -23,6 +23,33 @@ const getAllElections = catchAsync(async (req, res) => {
         data: result
     })
 })
+
+const updateElection = catchAsync(async (req, res) => {
+    const result = await ElectionService.updateElectionIntoDB(req);
+    sendResponse(res, {
+        success: true,
+        statusCode: status.OK,
+        message: "Election updated successfully",
+        data: result
+    })
+})
+
+const deleteElection = catchAsync(async (req, res) => {
+    const result = await ElectionService.deleteElectionIntoDB(req);
+    sendResponse(res, {
+        success: true,
+        statusCode: status.OK,
+        message: "Election deleted successfully",
+        data: result
+    })
+})
+
+
+
+
+
+
+
 export const ElectionController = {
-    createElection, getAllElections
+    createElection, getAllElections, updateElection, deleteElection
 }

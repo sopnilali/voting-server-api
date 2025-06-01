@@ -35,8 +35,8 @@ const getVoteCount = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
         data: result
     });
 }));
-const getVoteByElectionId = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield vote_service_1.VoteService.getVoteByElectionId(req);
+const getVoteByCandidateId = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield vote_service_1.VoteService.getVoteBycandidateId(req);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
@@ -47,5 +47,5 @@ const getVoteByElectionId = (0, catchAsync_1.catchAsync)((req, res) => __awaiter
 exports.VoteController = {
     submitVote,
     getVoteCount,
-    getVoteByElectionId
+    getVoteByCandidateId
 };

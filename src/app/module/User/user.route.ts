@@ -11,5 +11,7 @@ const router = express.Router();
 
 router.post("/", validateRequest(UserValidation.createUserZodSchema), UserController.createUser);
 router.get("/", auth(UserRole.ADMIN), UserController.getAllUser);
+router.patch("/:id", auth(UserRole.ADMIN), UserController.updateUser);
+router.delete("/:id", auth(UserRole.ADMIN), UserController.deleteUser);
 
 export const UserRoutes = router;

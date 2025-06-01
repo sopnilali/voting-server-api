@@ -48,6 +48,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const prisma_1 = __importDefault(require("../../utils/prisma"));
 const bcrypt = __importStar(require("bcrypt"));
+const AppError_1 = __importDefault(require("../../errors/AppError"));
+const http_status_1 = __importDefault(require("http-status"));
 const createUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const isUserExist = yield prisma_1.default.user.findUnique({
         where: {
@@ -71,7 +73,49 @@ const getUserFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
+const updateUser = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.user.update({
+        where: {
+            id: req.params.id
+        },
+        data: Object.assign({}, req.body)
+    });
+    return result;
+});
+const deleteUser = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.id;
+    // First check if user exists
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: userId },
+        include: { voterProfile: true }
+    });
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
+    }
+    // Use transaction to handle all deletions
+    const result = yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        if (user.voterProfile) {
+            // First delete all votes associated with this voter profile
+            yield tx.vote.deleteMany({
+                where: {
+                    voterId: user.voterProfile.id
+                }
+            });
+            // Then delete the voter profile
+            yield tx.voterProfile.delete({
+                where: { id: user.voterProfile.id }
+            });
+        }
+        // Finally delete the user
+        return yield tx.user.delete({
+            where: { id: userId }
+        });
+    }));
+    return result;
+});
 exports.UserService = {
     createUserIntoDB,
-    getUserFromDB
+    getUserFromDB,
+    updateUser,
+    deleteUser
 };

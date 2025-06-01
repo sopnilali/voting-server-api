@@ -1,3 +1,4 @@
+import { ElectionStatus } from "@prisma/client";
 import AppError from "../../errors/AppError";
 import prisma from "../../utils/prisma";
 import status from "http-status";
@@ -27,12 +28,15 @@ const submitVote = async (req: any) => {
 
     const isElectionExist = await prisma.election.findUnique({
         where: {
+            status: {
+                not: ElectionStatus.COMPLETED
+            },
             id: req.body.electionId
         }
     })
 
     if (!isElectionExist) {
-        throw new AppError(status.NOT_FOUND, "Election not found");
+        throw new AppError(status.NOT_FOUND, "Election not found or already completed");
     }
     const now = new Date();
 
@@ -61,17 +65,36 @@ const submitVote = async (req: any) => {
 
 const getVoteCount = async (req: any) => {
     const voteCount = await prisma.vote.groupBy({
-        by: ["electionId"],
-        
-        _count: true,
-    })
-    return voteCount;
+        by: ["candidateId", "electionId"],
+        _count: true
+    });
+
+    // Get election details
+    const electionDetails = await prisma.election.findMany({
+        where: {
+            id: {
+                in: voteCount.map(vote => vote.electionId)
+            }
+        },
+        select: {
+            id: true,
+            title: true
+        }
+    });
+
+    // Combine vote counts with election names
+    const result = voteCount.map(vote => ({
+        ...vote,
+        electionName: electionDetails.find(election => election.id === vote.electionId)?.title
+    }));
+
+    return result;
 }
 
-const getVoteByElectionId = async (req: any) => {
+const getVoteBycandidateId = async (req: any) => {
     const vote = await prisma.vote.findMany({
         where: {
-            electionId: req.params.electionId
+            candidateId: req.params.candidateId
         },
         include: {
             voter: {
@@ -92,6 +115,6 @@ const getVoteByElectionId = async (req: any) => {
 export const VoteService = {
     submitVote,
     getVoteCount,
-    getVoteByElectionId
+    getVoteBycandidateId
 }
 

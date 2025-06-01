@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/submit", auth(UserRole.USER), VoteController.submitVote);
 router.get("/count", auth(UserRole.ADMIN), VoteController.getVoteCount);
-router.get("/list/:electionId", auth(UserRole.USER), VoteController.getVoteByElectionId);
+router.get("/list/:candidateId", auth(UserRole.USER), VoteController.getVoteByCandidateId);
 
 export const VoteRoutes = router;
 

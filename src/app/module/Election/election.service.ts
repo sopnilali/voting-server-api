@@ -19,9 +19,26 @@ const getAllElections = async () => {
             candidates: true
         }
     })
+    return result;
 }
 
+const updateElectionIntoDB = async (req: any) => {
+    const result = await prisma.election.update({
+        where: { id: req.params.id },
+        data: req.body
+    })
+    return result;
+}
+
+const deleteElectionIntoDB = async (req: any) => {
+    const result = await prisma.election.delete({
+        where: { id: req.params.id }
+    })
+    return result;
+}
 export const ElectionService = {
     createElectionIntoDB,
-    getAllElections
+    getAllElections,
+    updateElectionIntoDB,
+    deleteElectionIntoDB
 }

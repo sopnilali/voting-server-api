@@ -13,4 +13,6 @@ const auth_1 = __importDefault(require("../../middleware/auth"));
 const router = express_1.default.Router();
 router.post("/", (0, validateRequest_1.default)(user_validation_1.UserValidation.createUserZodSchema), user_controller_1.UserController.createUser);
 router.get("/", (0, auth_1.default)(client_1.UserRole.ADMIN), user_controller_1.UserController.getAllUser);
+router.patch("/:id", (0, auth_1.default)(client_1.UserRole.ADMIN), user_controller_1.UserController.updateUser);
+router.delete("/:id", (0, auth_1.default)(client_1.UserRole.ADMIN), user_controller_1.UserController.deleteUser);
 exports.UserRoutes = router;

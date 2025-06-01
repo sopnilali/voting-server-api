@@ -35,6 +35,24 @@ const getAllElections = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(voi
         data: result
     });
 }));
+const updateElection = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield election_service_1.ElectionService.updateElectionIntoDB(req);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Election updated successfully",
+        data: result
+    });
+}));
+const deleteElection = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield election_service_1.ElectionService.deleteElectionIntoDB(req);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Election deleted successfully",
+        data: result
+    });
+}));
 exports.ElectionController = {
-    createElection, getAllElections
+    createElection, getAllElections, updateElection, deleteElection
 };

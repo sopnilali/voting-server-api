@@ -32,8 +32,24 @@ const getAllElections = () => __awaiter(void 0, void 0, void 0, function* () {
             candidates: true
         }
     });
+    return result;
+});
+const updateElectionIntoDB = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.election.update({
+        where: { id: req.params.id },
+        data: req.body
+    });
+    return result;
+});
+const deleteElectionIntoDB = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.election.delete({
+        where: { id: req.params.id }
+    });
+    return result;
 });
 exports.ElectionService = {
     createElectionIntoDB,
-    getAllElections
+    getAllElections,
+    updateElectionIntoDB,
+    deleteElectionIntoDB
 };

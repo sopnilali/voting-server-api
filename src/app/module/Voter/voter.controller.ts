@@ -24,8 +24,17 @@ const getAllVoters = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
-
+const updateVoterStatus = catchAsync(async (req: Request, res: Response) => {
+    const result = await VoterService.updateVoterStatus(req);
+    sendResponse(res, {
+        success: true,
+        statusCode: status.OK,
+        message: "Voter status updated successfully",
+        data: result
+    })
+})
 export const VoterController = {
     createVoterIntoDB,
-    getAllVoters
+    getAllVoters,
+    updateVoterStatus
 }

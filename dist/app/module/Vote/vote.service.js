@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoteService = void 0;
+const client_1 = require("@prisma/client");
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const prisma_1 = __importDefault(require("../../utils/prisma"));
 const http_status_1 = __importDefault(require("http-status"));
@@ -35,11 +36,14 @@ const submitVote = (req) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const isElectionExist = yield prisma_1.default.election.findUnique({
         where: {
+            status: {
+                not: client_1.ElectionStatus.COMPLETED
+            },
             id: req.body.electionId
         }
     });
     if (!isElectionExist) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Election not found");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Election not found or already completed");
     }
     const now = new Date();
     if (now < isElectionExist.startDate || now > isElectionExist.endDate) {
@@ -62,15 +66,32 @@ const submitVote = (req) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const getVoteCount = (req) => __awaiter(void 0, void 0, void 0, function* () {
     const voteCount = yield prisma_1.default.vote.groupBy({
-        by: ["electionId"],
-        _count: true,
+        by: ["candidateId", "electionId"],
+        _count: true
     });
-    return voteCount;
+    // Get election details
+    const electionDetails = yield prisma_1.default.election.findMany({
+        where: {
+            id: {
+                in: voteCount.map(vote => vote.electionId)
+            }
+        },
+        select: {
+            id: true,
+            title: true
+        }
+    });
+    // Combine vote counts with election names
+    const result = voteCount.map(vote => {
+        var _a;
+        return (Object.assign(Object.assign({}, vote), { electionName: (_a = electionDetails.find(election => election.id === vote.electionId)) === null || _a === void 0 ? void 0 : _a.title }));
+    });
+    return result;
 });
-const getVoteByElectionId = (req) => __awaiter(void 0, void 0, void 0, function* () {
+const getVoteBycandidateId = (req) => __awaiter(void 0, void 0, void 0, function* () {
     const vote = yield prisma_1.default.vote.findMany({
         where: {
-            electionId: req.params.electionId
+            candidateId: req.params.candidateId
         },
         include: {
             voter: {
@@ -91,5 +112,5 @@ const getVoteByElectionId = (req) => __awaiter(void 0, void 0, void 0, function*
 exports.VoteService = {
     submitVote,
     getVoteCount,
-    getVoteByElectionId
+    getVoteBycandidateId
 };

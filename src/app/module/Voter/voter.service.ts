@@ -31,7 +31,7 @@ const createVoterIntoDB = async (req: any) => {
             user: {connect: {id: req.user.id}},
             dateOfBirth: new Date(req.body.dateOfBirth),
             nationalId: req.body.nationalId,
-            isRegistered: true
+            isRegistered: false
         }
     })
     return result;
@@ -50,8 +50,21 @@ const getAllVoters = async () => {
     return result;
 }
 
+const updateVoterStatus = async (req: any) => {
+    const result = await prisma.voterProfile.update({
+        where: {
+            id: req.params.id
+        },
+        data: {
+            isRegistered: true
+        }
+    })
+    return result;
+}
+
 
 export const VoterService = {
     createVoterIntoDB,
-    getAllVoters
+    getAllVoters,
+    updateVoterStatus
 }

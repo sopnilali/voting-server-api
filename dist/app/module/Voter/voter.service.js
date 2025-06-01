@@ -38,7 +38,7 @@ const createVoterIntoDB = (req) => __awaiter(void 0, void 0, void 0, function* (
             user: { connect: { id: req.user.id } },
             dateOfBirth: new Date(req.body.dateOfBirth),
             nationalId: req.body.nationalId,
-            isRegistered: true
+            isRegistered: false
         }
     });
     return result;
@@ -55,7 +55,19 @@ const getAllVoters = () => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
+const updateVoterStatus = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.voterProfile.update({
+        where: {
+            id: req.params.id
+        },
+        data: {
+            isRegistered: true
+        }
+    });
+    return result;
+});
 exports.VoterService = {
     createVoterIntoDB,
-    getAllVoters
+    getAllVoters,
+    updateVoterStatus
 };

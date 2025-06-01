@@ -11,5 +11,5 @@ const client_1 = require("@prisma/client");
 const router = (0, express_1.Router)();
 router.post("/submit", (0, auth_1.default)(client_1.UserRole.USER), vote_controller_1.VoteController.submitVote);
 router.get("/count", (0, auth_1.default)(client_1.UserRole.ADMIN), vote_controller_1.VoteController.getVoteCount);
-router.get("/list/:electionId", (0, auth_1.default)(client_1.UserRole.USER), vote_controller_1.VoteController.getVoteByElectionId);
+router.get("/list/:candidateId", (0, auth_1.default)(client_1.UserRole.USER), vote_controller_1.VoteController.getVoteByCandidateId);
 exports.VoteRoutes = router;

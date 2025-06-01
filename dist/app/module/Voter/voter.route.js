@@ -14,4 +14,5 @@ const router = (0, express_1.Router)();
 router.post("/register", (0, auth_1.default)(client_1.UserRole.USER, client_1.UserRole.ADMIN), (0, validateRequest_1.default)(voter_validation_1.VoterValidation.createVoterZodSchema), voter_controller_1.VoterController.createVoterIntoDB);
 router.get("/", (0, auth_1.default)(client_1.UserRole.ADMIN), voter_controller_1.VoterController.getAllVoters);
 router.patch("/:id", (0, auth_1.default)(client_1.UserRole.ADMIN), voter_controller_1.VoterController.updateVoterStatus);
+router.delete("/:id", (0, auth_1.default)(client_1.UserRole.ADMIN), voter_controller_1.VoterController.deleteVoter);
 exports.VoterRoutes = router;

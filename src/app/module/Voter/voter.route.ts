@@ -11,5 +11,6 @@ const router = Router();
 router.post("/register", auth(UserRole.USER, UserRole.ADMIN), validateRequest(VoterValidation.createVoterZodSchema), VoterController.createVoterIntoDB);
 router.get("/", auth(UserRole.ADMIN), VoterController.getAllVoters);
 router.patch("/:id", auth(UserRole.ADMIN), VoterController.updateVoterStatus);
+router.delete("/:id", auth(UserRole.ADMIN), VoterController.deleteVoter);
 
 export const VoterRoutes = router;

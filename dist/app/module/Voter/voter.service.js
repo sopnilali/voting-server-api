@@ -48,7 +48,8 @@ const getAllVoters = () => __awaiter(void 0, void 0, void 0, function* () {
         include: {
             user: {
                 select: {
-                    voterProfile: true
+                    id: true,
+                    name: true,
                 }
             }
         }
@@ -66,8 +67,15 @@ const updateVoterStatus = (req) => __awaiter(void 0, void 0, void 0, function* (
     });
     return result;
 });
+const deleteVoter = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.voterProfile.delete({
+        where: { id: req.params.id }
+    });
+    return result;
+});
 exports.VoterService = {
     createVoterIntoDB,
     getAllVoters,
-    updateVoterStatus
+    updateVoterStatus,
+    deleteVoter
 };

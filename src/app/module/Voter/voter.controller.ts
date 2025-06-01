@@ -33,8 +33,20 @@ const updateVoterStatus = catchAsync(async (req: Request, res: Response) => {
         data: result
     })
 })
+
+const deleteVoter = catchAsync(async (req: Request, res: Response) => {
+    const result = await VoterService.deleteVoter(req);
+    sendResponse(res, {
+        success: true,
+        statusCode: status.OK,
+        message: "Voter deleted successfully",
+        data: result
+    })
+})
+
 export const VoterController = {
     createVoterIntoDB,
     getAllVoters,
-    updateVoterStatus
+    updateVoterStatus,
+    deleteVoter
 }

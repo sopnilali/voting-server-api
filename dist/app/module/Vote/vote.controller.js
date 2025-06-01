@@ -44,8 +44,18 @@ const getVoteByCandidateId = (0, catchAsync_1.catchAsync)((req, res) => __awaite
         data: result
     });
 }));
+const getVotingStats = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield vote_service_1.VoteService.getVotingStats(req);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Voting statistics retrieved successfully",
+        data: result
+    });
+}));
 exports.VoteController = {
     submitVote,
     getVoteCount,
-    getVoteByCandidateId
+    getVoteByCandidateId,
+    getVotingStats
 };

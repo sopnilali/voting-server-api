@@ -42,7 +42,8 @@ const getAllVoters = async () => {
         include: {
             user: {
                 select: {
-                    voterProfile: true
+                    id: true,
+                    name: true,
                 }
             }
         }
@@ -62,9 +63,16 @@ const updateVoterStatus = async (req: any) => {
     return result;
 }
 
+const deleteVoter = async (req: any) => {
+    const result = await prisma.voterProfile.delete({
+        where: { id: req.params.id }
+    })
+    return result;
+}
 
 export const VoterService = {
     createVoterIntoDB,
     getAllVoters,
-    updateVoterStatus
+    updateVoterStatus,
+    deleteVoter
 }

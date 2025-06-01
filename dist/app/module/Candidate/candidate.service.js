@@ -49,8 +49,41 @@ const getCandidateByElectionId = (electionId) => __awaiter(void 0, void 0, void 
     });
     return result;
 });
+const updateCandidateIntoDB = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.candidate.update({
+        where: { id: req.params.id },
+        data: req.body
+    });
+    return result;
+});
+const deleteCandidate = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const candidateId = req.params.id;
+    // First check if candidate exists
+    const candidate = yield prisma_1.default.candidate.findUnique({
+        where: { id: candidateId }
+    });
+    if (!candidate) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Candidate not found");
+    }
+    // Use transaction to handle all deletions
+    const result = yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        // First delete all votes associated with this candidate
+        yield tx.vote.deleteMany({
+            where: {
+                candidateId: candidateId
+            }
+        });
+        // Then delete the candidate
+        return yield tx.candidate.delete({
+            where: { id: candidateId }
+        });
+    }));
+    return result;
+});
 exports.CandidateService = {
     createCandidateIntoDB,
     getAllCandidates,
-    getCandidateByElectionId
+    getCandidateByElectionId,
+    updateCandidateIntoDB,
+    deleteCandidate
 };

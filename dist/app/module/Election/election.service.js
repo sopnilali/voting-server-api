@@ -29,7 +29,8 @@ const createElectionIntoDB = (req) => __awaiter(void 0, void 0, void 0, function
 const getAllElections = () => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.election.findMany({
         include: {
-            candidates: true
+            candidates: true,
+            votes: true
         }
     });
     return result;

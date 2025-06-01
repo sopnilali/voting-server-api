@@ -45,8 +45,28 @@ const getCandidateByElectionId = (0, catchAsync_1.catchAsync)((req, res) => __aw
         data: result
     });
 }));
+const updateCandidate = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield candidate_service_1.CandidateService.updateCandidateIntoDB(req);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Candidate updated successfully",
+        data: result
+    });
+}));
+const deleteCandidate = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield candidate_service_1.CandidateService.deleteCandidate(req);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Candidate deleted successfully",
+        data: result
+    });
+}));
 exports.CandidateController = {
     createCandidate,
     getAllCandidates,
-    getCandidateByElectionId
+    getCandidateByElectionId,
+    updateCandidate,
+    deleteCandidate
 };

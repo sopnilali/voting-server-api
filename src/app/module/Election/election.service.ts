@@ -16,7 +16,8 @@ const createElectionIntoDB = async (req: any) => {
 const getAllElections = async () => {
     const result = await prisma.election.findMany({
         include: {
-            candidates: true
+            candidates: true,
+            votes: true
         }
     })
     return result;

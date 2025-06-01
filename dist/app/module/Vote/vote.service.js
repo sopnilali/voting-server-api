@@ -109,8 +109,58 @@ const getVoteBycandidateId = (req) => __awaiter(void 0, void 0, void 0, function
     });
     return vote;
 });
+const getVotingStats = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    // Get all elections with their status
+    const elections = yield prisma_1.default.election.findMany({
+        select: {
+            id: true,
+            title: true,
+            status: true,
+            startDate: true,
+            endDate: true
+        }
+    });
+    // Get total number of registered voters
+    const totalVoters = yield prisma_1.default.voterProfile.count({
+        where: {
+            isRegistered: true
+        }
+    });
+    // Get vote counts for each election
+    const electionStats = yield Promise.all(elections.map((election) => __awaiter(void 0, void 0, void 0, function* () {
+        const votesCast = yield prisma_1.default.vote.count({
+            where: {
+                electionId: election.id
+            }
+        });
+        const participationRate = totalVoters > 0 ? (votesCast / totalVoters) * 100 : 0;
+        return {
+            electionId: election.id,
+            electionTitle: election.title,
+            totalVoters,
+            votesCast,
+            participationRate: Math.round(participationRate * 100) / 100,
+            status: election.status,
+            startDate: election.startDate,
+            endDate: election.endDate
+        };
+    })));
+    // Get overall statistics
+    const totalVotes = yield prisma_1.default.vote.count();
+    const overallParticipationRate = totalVoters > 0 ? (totalVotes / totalVoters) * 100 : 0;
+    return {
+        overall: {
+            totalVoters,
+            totalVotesCast: totalVotes,
+            participationRate: Math.round(overallParticipationRate * 100) / 100,
+            remainingVoters: totalVoters - totalVotes
+        },
+        byElection: electionStats
+    };
+});
 exports.VoteService = {
     submitVote,
     getVoteCount,
-    getVoteBycandidateId
+    getVoteBycandidateId,
+    getVotingStats
 };

@@ -34,8 +34,31 @@ const getCandidateByElectionId = catchAsync(async (req, res) => {
     })
 })
 
+const updateCandidate = catchAsync(async (req, res) => {
+    const result = await CandidateService.updateCandidateIntoDB(req);
+    sendResponse(res, {
+        success: true,
+        statusCode: status.OK,
+        message: "Candidate updated successfully",
+        data: result
+    })
+})
+
+const deleteCandidate = catchAsync(async (req, res) => {
+    const result = await CandidateService.deleteCandidate(req);
+    sendResponse(res, {
+        success: true,
+        statusCode: status.OK,
+        message: "Candidate deleted successfully",
+        data: result
+    })
+})
+
+
 export const CandidateController = {
     createCandidate,
     getAllCandidates,
-    getCandidateByElectionId
+    getCandidateByElectionId,
+    updateCandidate,
+    deleteCandidate
 }

@@ -44,8 +44,18 @@ const updateVoterStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(v
         data: result
     });
 }));
+const deleteVoter = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield voter_service_1.VoterService.deleteVoter(req);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Voter deleted successfully",
+        data: result
+    });
+}));
 exports.VoterController = {
     createVoterIntoDB,
     getAllVoters,
-    updateVoterStatus
+    updateVoterStatus,
+    deleteVoter
 };

@@ -1,0 +1,95 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.VoteService = void 0;
+const AppError_1 = __importDefault(require("../../errors/AppError"));
+const prisma_1 = __importDefault(require("../../utils/prisma"));
+const http_status_1 = __importDefault(require("http-status"));
+const submitVote = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const isVoterExist = yield prisma_1.default.voterProfile.findUnique({
+        where: {
+            id: req.body.voterId
+        }
+    });
+    if (!isVoterExist) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Voter not found");
+    }
+    const isCandidateExist = yield prisma_1.default.candidate.findUnique({
+        where: {
+            id: req.body.candidateId
+        }
+    });
+    if (!isCandidateExist) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Candidate not found");
+    }
+    const isElectionExist = yield prisma_1.default.election.findUnique({
+        where: {
+            id: req.body.electionId
+        }
+    });
+    if (!isElectionExist) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Election not found");
+    }
+    const now = new Date();
+    if (now < isElectionExist.startDate || now > isElectionExist.endDate) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, "Voting is not open for this election");
+    }
+    const existingVote = yield prisma_1.default.vote.findUnique({
+        where: { voterId_electionId: { voterId: req.body.voterId, electionId: req.body.electionId } },
+    });
+    if (existingVote) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You have already voted in this election");
+    }
+    const vote = yield prisma_1.default.vote.create({
+        data: {
+            voter: { connect: { id: req.body.voterId } },
+            candidate: { connect: { id: req.body.candidateId } },
+            election: { connect: { id: req.body.electionId } },
+        },
+    });
+    return vote;
+});
+const getVoteCount = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const voteCount = yield prisma_1.default.vote.groupBy({
+        by: ["electionId"],
+        _count: true,
+    });
+    return voteCount;
+});
+const getVoteByElectionId = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const vote = yield prisma_1.default.vote.findMany({
+        where: {
+            electionId: req.params.electionId
+        },
+        include: {
+            voter: {
+                select: {
+                    user: {
+                        select: {
+                            voterProfile: true
+                        }
+                    }
+                }
+            },
+            candidate: true,
+            election: true
+        }
+    });
+    return vote;
+});
+exports.VoteService = {
+    submitVote,
+    getVoteCount,
+    getVoteByElectionId
+};

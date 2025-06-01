@@ -24,7 +24,7 @@ app.use('/api', router)
 
 //global routes
 app.get("/", (req, res) => {
-    res.send("Hello shop server is running!!");
+    res.send("Voting server is running!!");
 });
 
 // global error handler

@@ -24,7 +24,7 @@ app.use((0, cookie_parser_1.default)());
 app.use('/api', routes_1.default);
 //global routes
 app.get("/", (req, res) => {
-    res.send("Hello shop server is running!!");
+    res.send("Voting server is running!!");
 });
 // global error handler
 app.use(globalErrorHandler_1.default);

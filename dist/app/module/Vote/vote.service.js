@@ -18,13 +18,14 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const prisma_1 = __importDefault(require("../../utils/prisma"));
 const http_status_1 = __importDefault(require("http-status"));
 const submitVote = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    const isVoterExist = yield prisma_1.default.voterProfile.findUnique({
+    // First get the voter profile using userId
+    const voterProfile = yield prisma_1.default.voterProfile.findFirst({
         where: {
-            id: req.body.voterId
+            userId: req.body.voterId
         }
     });
-    if (!isVoterExist) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Voter not found");
+    if (!voterProfile) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Voter profile not found");
     }
     const isCandidateExist = yield prisma_1.default.candidate.findUnique({
         where: {
@@ -50,14 +51,19 @@ const submitVote = (req) => __awaiter(void 0, void 0, void 0, function* () {
         throw new AppError_1.default(http_status_1.default.FORBIDDEN, "Voting is not open for this election");
     }
     const existingVote = yield prisma_1.default.vote.findUnique({
-        where: { voterId_electionId: { voterId: req.body.voterId, electionId: req.body.electionId } },
+        where: {
+            voterId_electionId: {
+                voterId: voterProfile.id,
+                electionId: req.body.electionId
+            }
+        },
     });
     if (existingVote) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You have already voted in this election");
     }
     const vote = yield prisma_1.default.vote.create({
         data: {
-            voter: { connect: { id: req.body.voterId } },
+            voter: { connect: { id: voterProfile.id } },
             candidate: { connect: { id: req.body.candidateId } },
             election: { connect: { id: req.body.electionId } },
         },

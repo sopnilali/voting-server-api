@@ -5,22 +5,22 @@ import status from "http-status";
 
 
 const submitVote = async (req: any) => {
-
-    const isVoterExist = await prisma.voterProfile.findUnique({
+    // First get the voter profile using userId
+    const voterProfile = await prisma.voterProfile.findFirst({
         where: {
-            id: req.body.voterId
+            userId: req.body.voterId
         }
-    })
+    });
 
-    if (!isVoterExist) {
-        throw new AppError(status.NOT_FOUND, "Voter not found");
+    if (!voterProfile) {
+        throw new AppError(status.NOT_FOUND, "Voter profile not found");
     }
 
     const isCandidateExist = await prisma.candidate.findUnique({
         where: {
             id: req.body.candidateId
         }
-    })
+    });
 
     if (!isCandidateExist) {
         throw new AppError(status.NOT_FOUND, "Candidate not found");
@@ -33,11 +33,12 @@ const submitVote = async (req: any) => {
             },
             id: req.body.electionId
         }
-    })
+    });
 
     if (!isElectionExist) {
         throw new AppError(status.NOT_FOUND, "Election not found or already completed");
     }
+
     const now = new Date();
 
     if (now < isElectionExist.startDate || now > isElectionExist.endDate) {
@@ -45,7 +46,12 @@ const submitVote = async (req: any) => {
     }
 
     const existingVote = await prisma.vote.findUnique({
-        where: { voterId_electionId: { voterId: req.body.voterId, electionId: req.body.electionId } },
+        where: { 
+            voterId_electionId: { 
+                voterId: voterProfile.id, 
+                electionId: req.body.electionId 
+            } 
+        },
     });
 
     if (existingVote) {
@@ -54,7 +60,7 @@ const submitVote = async (req: any) => {
 
     const vote = await prisma.vote.create({
         data: {
-            voter: { connect: { id: req.body.voterId } },
+            voter: { connect: { id: voterProfile.id } },
             candidate: { connect: { id: req.body.candidateId } },
             election: { connect: { id: req.body.electionId } },
         },
